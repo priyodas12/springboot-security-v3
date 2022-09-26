@@ -1,7 +1,9 @@
 package io.springboot.springbootsecurityv3.controller;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,12 @@ public class ProductController {
       cacheProductMap.put(id, productService.getProductInfo(id));
       return cacheProductMap.getOrDefault(id, cacheProductMap.get(0));
     }
+  }
+
+  @GetMapping("/cache")
+  public List<Product> getAllCache(){
+    logger.info("Search in cache for all products");
+    return cacheProductMap.values().stream().map(p->p).collect(Collectors.toList());
   }
 
 }
