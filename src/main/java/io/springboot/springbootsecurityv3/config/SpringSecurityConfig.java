@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @EnableWebSecurity
 @Configuration
@@ -30,6 +31,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         //SecureUserRole.PRODUCT_OWNER.name(),SecureUserRole.TESTER.name(),
         http.cors().disable();
         http.csrf().disable();
+        //http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
         //AUTHORITY(PERMISSION) BASED AUTHORIZATION
         http.authorizeRequests()
