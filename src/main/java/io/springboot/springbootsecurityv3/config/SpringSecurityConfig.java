@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -16,6 +17,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @EnableWebSecurity
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     public static Logger logger= LoggerFactory.getLogger(SpringSecurityConfig.class);
@@ -32,10 +34,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         //AUTHORITY(PERMISSION) BASED AUTHORIZATION
         http.authorizeRequests()
                 .antMatchers("/index.html","/css/*","/js/*").permitAll()//api whitelisting
-                .antMatchers(HttpMethod.POST).hasAnyAuthority(SecurePermission.PRODUCT_WRITE.getPermission())
-                .antMatchers(HttpMethod.GET).hasAnyAuthority(SecurePermission.PRODUCT_READ.getPermission())
-                .antMatchers(HttpMethod.PUT).hasAnyAuthority(SecurePermission.PRODUCT_MODIFY.getPermission())
-                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(SecurePermission.PRODUCT_DELETE.getPermission())
+                //.antMatchers(HttpMethod.POST).hasAnyAuthority(SecurePermission.PRODUCT_WRITE.getPermission())//while using @Preauthorized
+                //.antMatchers(HttpMethod.GET).hasAnyAuthority(SecurePermission.PRODUCT_READ.getPermission())
+                //.antMatchers(HttpMethod.PUT).hasAnyAuthority(SecurePermission.PRODUCT_UPDATE.getPermission())
+                //.antMatchers(HttpMethod.DELETE).hasAnyAuthority(SecurePermission.PRODUCT_DELETE.getPermission())
                 .antMatchers("/api/v3/products/**").hasAnyRole(SecureUserRole.DEVELOPER.name(),SecureUserRole.PRODUCT_OWNER.name(),SecureUserRole.TESTER.name())
                 .anyRequest()
                 .authenticated()

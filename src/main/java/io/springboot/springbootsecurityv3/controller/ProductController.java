@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import io.springboot.springbootsecurityv3.pojos.Product;
@@ -29,8 +30,10 @@ public class ProductController {
   public void loadDefaultProduct(){
       cacheProductMap.put(0, new Product());
   }
+
   
   @GetMapping("/{id}")
+  @PreAuthorize("hasAuthority('PRODUCT_READ')")
   public ResponseEntity<Product> getProduct(@PathVariable("id") final Integer id){
     logger.info("-----------getProduct() starts ---------");
     loadDefaultProduct();
@@ -48,6 +51,7 @@ public class ProductController {
   }
 
   @PostMapping("/")
+  @PreAuthorize("hasAuthority('PRODUCT_WRITE')")
   public ResponseEntity<Product> addProduct(@RequestBody Product product){
     logger.info("-----------addProduct() starts ---------");
     loadDefaultProduct();
@@ -62,6 +66,7 @@ public class ProductController {
   }
 
   @PutMapping("/")
+  @PreAuthorize("hasAuthority('PRODUCT_UPDATE')")
   public ResponseEntity<Product> modifyProduct(@RequestBody Product product){
     logger.info("-----------modifyProduct() starts ---------");
     loadDefaultProduct();
@@ -78,6 +83,7 @@ public class ProductController {
 
 
   @DeleteMapping ("/{id}")
+  @PreAuthorize("hasAuthority('PRODUCT_DELETE')")
   public ResponseEntity<Boolean> deleteProduct(@PathVariable("id") final Integer id){
     logger.info("-----------deleteProduct() starts ---------");
     if(cacheProductMap.keySet().contains(id)){
