@@ -2,10 +2,10 @@ package io.springboot.springbootsecurityv3.config;
 
 public enum SecurePermission {
 
-    PRODUCT_READ("PRODUCT:READ"),
-    PRODUCT_WRITE("PRODUCT:WRITE"),
-    PRODUCT_DELETE("PRODUCT:DELETE"),
-    PRODUCT_MODIFY("PRODUCT:UPDATE");
+    PRODUCT_READ("PRODUCT_READ"),
+    PRODUCT_WRITE("PRODUCT_WRITE"),
+    PRODUCT_DELETE("PRODUCT_DELETE"),
+    PRODUCT_MODIFY("PRODUCT_UPDATE");
 
 
     private final String permission;

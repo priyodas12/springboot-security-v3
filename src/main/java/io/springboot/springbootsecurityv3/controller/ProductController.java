@@ -8,9 +8,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import io.springboot.springbootsecurityv3.pojos.Product;
@@ -32,22 +31,25 @@ public class ProductController {
   }
   
   @GetMapping("/{id}")
-  public Product getProduct(@PathVariable("id") final Integer id){
+  public ResponseEntity<Product> getProduct(@PathVariable("id") final Integer id){
+    logger.info("-----------getProduct() starts ---------");
     loadDefaultProduct();
 
     if(cacheProductMap.keySet().contains(id)){
       logger.info("Search in cache for product id :{},{}",id);
-      return cacheProductMap.get(id);
+      return new ResponseEntity<Product>(cacheProductMap.get(id),HttpStatus.OK);
     }else{
       logger.info("Search in repository for product id :{}",id);
       cacheProductMap.put(id, productService.getProductInfo(id));
-      return cacheProductMap.getOrDefault(id, cacheProductMap.get(0));
+      return new ResponseEntity<Product>(cacheProductMap.getOrDefault(id, cacheProductMap.get(0)),HttpStatus.OK);
+
     }
 
   }
 
   @PostMapping("/")
-  public Product addProduct(@RequestBody Product product){
+  public ResponseEntity<Product> addProduct(@RequestBody Product product){
+    logger.info("-----------addProduct() starts ---------");
     loadDefaultProduct();
     if(cacheProductMap.keySet().contains(product.getId())){
       logger.info("Product exist cache ,Adding updated :{}",product.getId());
@@ -56,11 +58,12 @@ public class ProductController {
       logger.info("Adding Product :{}",product.getId());
     }
     cacheProductMap.put(product.getId(),product);
-    return product;
+    return new ResponseEntity<Product>(cacheProductMap.get(product.getId()),HttpStatus.OK);
   }
 
   @PutMapping("/")
-  public Product modifyProduct(@RequestBody Product product){
+  public ResponseEntity<Product> modifyProduct(@RequestBody Product product){
+    logger.info("-----------modifyProduct() starts ---------");
     loadDefaultProduct();
     if(cacheProductMap.keySet().contains(product.getId())){
       logger.info("Product exist cache ,Adding updated :{}",product.getId());
@@ -70,24 +73,26 @@ public class ProductController {
       logger.info("Product Id: {} does not exist!",product.getId());
       throw new RuntimeException("Product Id:"+product.getId()+" does not exist!");
     }
-    return product;
+    return new ResponseEntity<Product>(cacheProductMap.get(product.getId()),HttpStatus.OK);
   }
 
 
   @DeleteMapping ("/{id}")
-  public Boolean deleteProduct(@PathVariable("id") final Integer id){
+  public ResponseEntity<Boolean> deleteProduct(@PathVariable("id") final Integer id){
+    logger.info("-----------deleteProduct() starts ---------");
     if(cacheProductMap.keySet().contains(id)){
       cacheProductMap.remove(id);
-      return Boolean.TRUE;
+      return new ResponseEntity<Boolean>(Boolean.TRUE,HttpStatus.OK);
     }else{
-      return Boolean.FALSE;
+      return new ResponseEntity<Boolean>(Boolean.FALSE,HttpStatus.OK);
     }
   }
 
   @GetMapping("/cache")
-  public List<Product> getAllCache(){
+  public ResponseEntity<List<Product>> getAllCache(){
     logger.info("Search in cache for all products");
-    return cacheProductMap.values().stream().map(p->p).collect(Collectors.toList());
+    List<Product> products= cacheProductMap.values().stream().map(p->p).collect(Collectors.toList());
+    return new ResponseEntity<>(products,HttpStatus.OK);
   }
 
 }

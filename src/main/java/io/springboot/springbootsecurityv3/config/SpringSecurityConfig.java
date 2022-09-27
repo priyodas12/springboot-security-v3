@@ -1,6 +1,5 @@
 package io.springboot.springbootsecurityv3.config;
 
-import io.springboot.springbootsecurityv3.controller.ProductController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +9,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @EnableWebSecurity
 @Configuration
@@ -28,26 +25,45 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//SecureUserRole.PRODUCT_OWNER.name(),SecureUserRole.TESTER.name(),
-        http.csrf()
-                .disable()
-                .authorizeRequests()
+        //SecureUserRole.PRODUCT_OWNER.name(),SecureUserRole.TESTER.name(),
+        http.cors().disable();
+        http.csrf().disable();
+
+        //AUTHORITY(PERMISSION) BASED AUTHORIZATION
+        http.authorizeRequests()
                 .antMatchers("/index.html","/css/*","/js/*").permitAll()//api whitelisting
+                .antMatchers(HttpMethod.POST).hasAnyAuthority(SecurePermission.PRODUCT_WRITE.getPermission())
+                .antMatchers(HttpMethod.GET).hasAnyAuthority(SecurePermission.PRODUCT_READ.getPermission())
+                .antMatchers(HttpMethod.PUT).hasAnyAuthority(SecurePermission.PRODUCT_MODIFY.getPermission())
+                .antMatchers(HttpMethod.DELETE).hasAnyAuthority(SecurePermission.PRODUCT_DELETE.getPermission())
                 .antMatchers("/api/v3/products/**").hasAnyRole(SecureUserRole.DEVELOPER.name(),SecureUserRole.PRODUCT_OWNER.name(),SecureUserRole.TESTER.name())
-                .antMatchers(HttpMethod.POST,"/api/v3/products/").hasAuthority(SecurePermission.PRODUCT_WRITE.getPermission())
-                .antMatchers(HttpMethod.GET,"/api/v3/products/{id}").hasAuthority(SecurePermission.PRODUCT_READ.getPermission())
-                //.antMatchers("/api/v3/products/").hasRole(SecureUserRole.TESTER.name())
-                .antMatchers(HttpMethod.PUT,"/api/v3/products/").hasAuthority(SecurePermission.PRODUCT_MODIFY.getPermission())
-                //.antMatchers("/api/v3/products/{id}").hasRole(SecureUserRole.PRODUCT_OWNER.name())
-                .antMatchers(HttpMethod.DELETE,"/api/v3/products/{id}").hasAuthority(SecurePermission.PRODUCT_DELETE.getPermission())
                 .anyRequest()
                 .authenticated()
                 .and()
                 .httpBasic();
+                //.and()
+                //.exceptionHandling()
+                //.accessDeniedPage("/accessDenied.html");
+
+
+
+        /**ROLE BASED AUTHORIZATION
+        http.authorizeRequests()
+                .antMatchers("/index.html","/css/*","/js/*").permitAll()//api whitelisting
+                .antMatchers(HttpMethod.POST).hasRole(SecureUserRole.DEVELOPER.name())
+                .antMatchers(HttpMethod.GET).hasRole(SecureUserRole.DEVELOPER.name())
+                .antMatchers(HttpMethod.PUT).hasRole(SecureUserRole.TESTER.name())
+                .antMatchers(HttpMethod.DELETE).hasRole(SecureUserRole.PRODUCT_OWNER.name())
+                .antMatchers("/api/v3/products/**").hasAnyRole(SecureUserRole.DEVELOPER.name(),SecureUserRole.PRODUCT_OWNER.name(),SecureUserRole.TESTER.name())
+                .anyRequest()
+                .authenticated()
+                .and()
+                .httpBasic();
+        */
 
     }
 
-    //to supply authentication details
+    //to supply authentication.authorization details
     @Override
     @Bean
     protected UserDetailsService userDetailsService() {

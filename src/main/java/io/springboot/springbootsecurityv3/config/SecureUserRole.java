@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 public enum SecureUserRole {
 
     DEVELOPER(Sets.newHashSet(SecurePermission.PRODUCT_READ,SecurePermission.PRODUCT_WRITE)),
-    TESTER(Sets.newHashSet(SecurePermission.PRODUCT_MODIFY)),
-    PRODUCT_OWNER(Sets.newHashSet(SecurePermission.PRODUCT_DELETE));
+    TESTER(Sets.newHashSet(SecurePermission.PRODUCT_READ,SecurePermission.PRODUCT_WRITE,SecurePermission.PRODUCT_MODIFY)),
+    PRODUCT_OWNER(Sets.newHashSet(SecurePermission.PRODUCT_READ,SecurePermission.PRODUCT_WRITE,SecurePermission.PRODUCT_MODIFY,SecurePermission.PRODUCT_DELETE));
 
     private final Set<SecurePermission> permission;
 
