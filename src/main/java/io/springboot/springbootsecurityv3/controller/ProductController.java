@@ -36,7 +36,7 @@ public class ProductController {
     loadDefaultProduct();
 
     if(cacheProductMap.keySet().contains(id)){
-      logger.info("Search in cache for product id :{},{}",id);
+      logger.info("Search in cache for product id :{}",id);
       return new ResponseEntity<Product>(cacheProductMap.get(id),HttpStatus.OK);
     }else{
       logger.info("Search in repository for product id :{}",id);
